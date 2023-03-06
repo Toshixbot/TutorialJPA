@@ -22,18 +22,21 @@ public class CountryController {
     public String getList(Model model) {
         // 全件検索結果をModelに登録
         model.addAttribute("countrylist", service.getCountryList());
+        model.addAttribute("detailUrl", "/country/detail");
+        model.addAttribute("deleteUrl", "/country/delete");
         // country/list.htmlに画面遷移
         return "country/list";
     }
 
     // ----- 追加:ここから -----
     // ----- 詳細画面 -----
-    @GetMapping(value = { "/detail", "/detail/{code}/" })
-    public String getCountry(@PathVariable(name = "code", required = false) String code, Model model) {
+    @GetMapping(value = { "/detail/{code}" })
+    public String getCountry(@PathVariable(name = "code") String code, Model model) {
         // codeが指定されていたら検索結果、無ければ空のクラスを設定
-        Country country = code != null ? service.getCountry(code) : new Country();
+        Country country = service.getCountry(code);
         // Modelに登録
         model.addAttribute("country", country);
+        model.addAttribute("listUrl", "/country/list");
         // country/detail.htmlに画面遷移
         return "country/detail";
     }
@@ -50,8 +53,14 @@ public class CountryController {
     }
 
     // ----- 削除画面 -----
-    @GetMapping("/delete")
-    public String deleteCountryForm(Model model) {
+    @GetMapping(value = { "/delete/{code}" })
+    public String getDeleteCountry(@PathVariable(name = "code") String code, Model model) {
+        // codeが指定されていたら検索結果、無ければ空のクラスを設定
+        Country country = service.getCountry(code);
+        // Modelに登録
+        model.addAttribute("code", code);
+        model.addAttribute("listUrl", "/country/list");
+        model.addAttribute("name", country.getName());
         // country/delete.htmlに画面遷移
         return "country/delete";
     }
